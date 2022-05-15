@@ -10,13 +10,15 @@ describe Game do
 
   describe "#drop_disc" do
     it "drops a disc into the game board" do
-      expect(game.drop_disc(0, 'd')).to eql(game.board[5][0] = 'd')
+      game.drop_disc(0, 'd')
+      expect(game.board[5][0]).to eql('d')
     end
   end
 
   describe "#drop_disc" do
     it "drops a disc on top of another disc" do
-      expect(game.drop_disc(0, 'd')).to eql(game.board[4][0] = 'd')
+      game.drop_disc(0, 'd')
+      expect(game.board[4][0]).to eql('d')
     end
   end
 
@@ -85,6 +87,13 @@ describe Game do
       expect(game.four_in_row?([2,3], 'd', 'y')).to eql(true)
       expect(game.four_in_row?([4,3], 'd', 'y')).to eql(true)
       expect(game.four_in_row?([2,4], 'd', 'y')).to eql(false)
+    end
+  end
+
+  describe "#any_win?" do
+    it "Searches if there is any four in success in any direction" do
+      expect(game.any_win?([5,3], 'd')).to eql(true)
+      expect(game.any_win?([2,4], 'd')).to eql(false)
     end
   end
 =begin

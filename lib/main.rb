@@ -10,7 +10,12 @@ class Game
 
   def drop_disc(col_no, sign, possible_row = nil)
     5.downto(0) { |i| possible_row = i and break if board[i][col_no] == '🟦' }
-    possible_row.nil? ? (puts 'This column is full') : (@board[possible_row][col_no] = sign)
+    if possible_row.nil?
+      puts 'This column is full'
+    else
+      @board[possible_row][col_no] = sign
+      [[possible_row][0], [col_no][0]]
+    end
   end
 
   def four_in_row?(current_pos, sign, direction, queue = [], no_of_success = 0, history = [])
@@ -22,6 +27,10 @@ class Game
       search(queue, current, direction, history, sign)
     end
     no_of_success.eql?(4) ? true : false
+  end
+
+  def any_win?(pos, sign)
+    four_in_row?(pos, sign, 'x') || four_in_row?(pos, sign, 'z') || four_in_row?(pos, sign, 'y') ? true : false
   end
 
   def search(queue, current, direction, history, sign)
@@ -52,10 +61,39 @@ class Game
   end
 
   def start_game
-
+    names = []
+    puts "Enter the name of Player#1"
+    names[0] = gets.chomp
+    puts "Enter the name of Player#2"
+    names[1] = gets.chomp
+    (turn = rand(2)).zero? ? (puts "#{names[0]} goes first (🟡)") : (puts "puts #{names[1]} goes first (🔴)")
   end
+
+  def single_round
+    players = [{:name => 'Player1', :sign => '🟡'},{:name => 'Player2', :sign => '🔴'}]
+
+    puts "Which column would you like to drop the disc #{players[0][:name]}?"
+    puts 'Please enter a valid column: ' until position =  column_available(gets.chomp.to_i, players[0][:sign])
+    display_board
+    puts "#{players[0][:name]} has won the game!" if any_win?(position, players[0][:sign] )
+
+    puts "Which column would you like to drop the disc #{players[1][:name]}?"
+    puts 'Please enter a valid column: ' until position =  column_available(gets.chomp.to_i, players[1][:sign])
+    display_board
+    puts "#{players[1][:name]} has won the game!" if any_win?(position,players[1][:sign] )
+  end
+
+  def column_available(col_no, sign)
+    return false unless col_no.between?(0,6)
+    return false if (position = drop_disc(col_no, sign)).nil?
+    position
+  end
+
 end
 
 # misc: 🟡 , 🔴
 game = Game.new
 game.display_board
+3.times {p game.drop_disc(0, '🔴')}
+game.display_board
+game.single_round
