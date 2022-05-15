@@ -60,27 +60,24 @@ class Game
     end
   end
 
-  def start_game
-    names = []
+  def start_game(names = [])
     puts "Enter the name of Player#1"
-    names[0] = gets.chomp
+    names.push({:name => gets.chomp, :sign => '🟡' })
     puts "Enter the name of Player#2"
-    names[1] = gets.chomp
-    (turn = rand(2)).zero? ? (puts "#{names[0]} goes first (🟡)") : (puts "puts #{names[1]} goes first (🔴)")
+    names.push({:name => gets.chomp, :sign => '🔴' })
+    result = single_round(names) until result == true
   end
 
-  def single_round
-    players = [{:name => 'Player1', :sign => '🟡'},{:name => 'Player2', :sign => '🔴'}]
-
-    puts "Which column would you like to drop the disc #{players[0][:name]}?"
-    puts 'Please enter a valid column: ' until position =  column_available(gets.chomp.to_i, players[0][:sign])
-    display_board
-    puts "#{players[0][:name]} has won the game!" if any_win?(position, players[0][:sign] )
-
-    puts "Which column would you like to drop the disc #{players[1][:name]}?"
-    puts 'Please enter a valid column: ' until position =  column_available(gets.chomp.to_i, players[1][:sign])
-    display_board
-    puts "#{players[1][:name]} has won the game!" if any_win?(position,players[1][:sign] )
+  def single_round(players)
+    2.times do |i|
+      puts "Which column would you like to drop the disc #{players[i][:name]}?"
+      puts 'Please enter a valid column: ' until position =  column_available(gets.chomp.to_i, players[i][:sign])
+      display_board
+      if any_win?(position, players[i][:sign])
+        puts "#{players[i][:name]} has won the game!"  
+        return true
+      end
+    end
   end
 
   def column_available(col_no, sign)
@@ -94,6 +91,4 @@ end
 # misc: 🟡 , 🔴
 game = Game.new
 game.display_board
-3.times {p game.drop_disc(0, '🔴')}
-game.display_board
-game.single_round
+game.start_game
